@@ -1,0 +1,117 @@
+CREATE DATABASE BD_PIM_FAZENDA_URBANA
+
+USE BD_PIM_FAZENDA_URBANA;
+
+GO
+
+-- Tabela Cadastro dos Produtos
+CREATE TABLE CadastroDeProdutos (
+    IdProduto INT IDENTITY(1,1) PRIMARY KEY,
+    Nome VARCHAR(20) NOT NULL,
+    PrecoProduto DECIMAL(10, 2) NOT NULL,
+    QuantidadeDeProdutos INT NOT NULL,
+    DescricaoProduto VARCHAR(200),
+);
+
+INSERT INTO CadastroDeProdutos (Nome, PrecoProduto, QuantidadeDeProdutos, DescricaoProduto)
+VALUES 
+('Alface','3.50','200','Alface verde fresca da fazenda urbana para suas saladas.'),
+('Tomate','4.50','200','Tomates frescos e suculentos para todos os seus pratos.'),
+('Cenoura','3.00','200','Cenouras frescas e crocantes para suas receitas favoritas.'),
+('Repolho Roxo','3.50','200','Repolho roxo fresco para realçar suas refeições.'),
+('Abóbora','3.50','200','Abóbora fresca e deliciosa para suas receitas.'),
+('Beringela','3.50','200','Beringela fresca, versátil e nutritiva para seus pratos favoritos.');
+
+GO
+
+-- Tabela Cadastro de Cliente Físico
+CREATE TABLE CadastroClienteFisico (
+    IdClienteFisico INT IDENTITY(1,1) PRIMARY KEY,
+    Nome VARCHAR(20) NOT NULL,
+    Sobrenome VARCHAR(20) NOT NULL,
+    CPF CHAR(11) UNIQUE NOT NULL,  -- CPF com 11 dígitos fixos
+    DataNascimento DATE NOT NULL,
+    Genero VARCHAR(20),
+    CEP CHAR(8) NOT NULL,
+    Estado CHAR(2) NOT NULL, -- Sigla do Estado
+    Logradouro VARCHAR(255) NOT NULL, 
+    NumeroResidencia VARCHAR(10) NOT NULL,
+    Complemento VARCHAR(255),
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Telefone VARCHAR(15) NOT NULL,
+    Senha VARCHAR(100) NOT NULL,
+    Ativo BIT DEFAULT 1,
+    DataCriacao DATETIME DEFAULT GETDATE()
+);
+GO
+
+-- Tabela Cadastro de Cliente Empresa
+CREATE TABLE CadastroClienteEmpresa (
+    IdClienteEmpresa INT IDENTITY(1,1) PRIMARY KEY,
+    CNPJ CHAR(14) UNIQUE NOT NULL,  -- CNPJ com 14 dígitos fixos
+    RazaoSocial VARCHAR(255) NOT NULL,
+    DataFundacao DATE NOT NULL,
+    PorteEmpresa VARCHAR(20) NOT NULL,  -- Pequeno, Médio ou grande
+    CEP CHAR(8) NOT NULL,
+    Estado CHAR(2) NOT NULL, -- Sigla do Estado
+    Logradouro VARCHAR(255) NOT NULL,
+    NumeroEmpresa VARCHAR(10) NOT NULL,
+    Complemento VARCHAR(100),
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Telefone VARCHAR(15),
+    Senha VARCHAR(100) NOT NULL,
+    Ativo BIT DEFAULT 1,
+    DataCriacao DATETIME DEFAULT GETDATE()
+);
+GO
+
+-- Tabela Login de Administradores
+CREATE TABLE PerfilAdmin (
+    IdLoginAdmin INT IDENTITY(1,1) PRIMARY KEY,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Senha VARCHAR(255) NOT NULL
+);
+
+INSERT INTO PerfilAdmin (Email, Senha)
+VALUES ('fazenda.urbana2024@pim.com.br', 'C3n0ura2K24@@');
+
+GO
+
+-- Tabela Fornecedor Geral
+CREATE TABLE Fornecedores (
+    IdFornecedor INT IDENTITY(1,1) PRIMARY KEY,
+    Nome NVARCHAR(100) NOT NULL,
+    Telefone NVARCHAR(15),
+    Email NVARCHAR(100) UNIQUE NOT NULL,
+    Material NVARCHAR(255) NOT NULL,  -- Materiais fornecidos (Obra Prima)
+    QuantidadeMaterial INT NOT NULL
+);
+INSERT INTO Fornecedores (Nome, Telefone, Email, Material, QuantidadeMaterial)
+VALUES 
+('Fornecedor Sementes de Alface', '33-33456-7890', 'fornecedor.alface@pim.com.br', 'Sementes de Alface','10000'),
+('Fornecedor Sementes de Tomate', '55-55678-9012', 'fornecedor.tomate@pim.com.br', 'Sementes de Tomate','10000'),
+('Fornecedor Sementes de Cenoura', '22-22345-6789', 'fornecedor.cenoura@pim.com.br', 'Sementes de Cenoura','10000'),
+('Fornecedor Sementes de Repolho Roxo', '11-11234-5678', 'fornecedor.repolho@pim.com.br', 'Sementes de Repolho Roxo','10000'),
+('Fornecedor Sementes de Abóbora', '44-44567-8901', 'fornecedor.abobora@pim.com.br', 'Sementes de Abóbora','10000'),
+('Fornecedor Sementes de Beringela', '66-66789-0123', 'fornecedor.beringela@pim.com.br', 'Sementes de Beringela','10000');
+GO
+
+CREATE TABLE Vendas(
+    IdVenda INT IDENTITY(1,1) PRIMARY KEY,
+    IdClienteFisico INT NULL,
+    IdClienteEmpresa INT NULL,
+	Produtos VARCHAR(30) NOT NULL,
+    DataVenda DATETIME DEFAULT GETDATE(),
+    ValorTotal DECIMAL(10, 2) NOT NULL,
+    FormaDePagamento VARCHAR(50) NOT NULL,
+    CONSTRAINT FK_Vendas_IdClienteFisico FOREIGN KEY (IdClienteFisico) REFERENCES CadastroClienteFisico(IdClienteFisico),
+    CONSTRAINT FK_Vendas_IdClienteEmpresa FOREIGN KEY (IdClienteEmpresa) REFERENCES CadastroClienteEmpresa(IdClienteEmpresa)
+);
+GO
+
+SELECT * FROM PerfilAdmin;
+SELECT * FROM CadastroDeProdutos;
+SELECT * FROM Fornecedores;
+SELECT * FROM CadastroClienteEmpresa;
+SELECT * FROM CadastroClienteFisico;
+SELECT * FROM Vendas;
